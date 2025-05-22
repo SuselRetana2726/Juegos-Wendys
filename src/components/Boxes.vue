@@ -1,5 +1,7 @@
 <template>
   <div class="game-container">
+    <div class="title">Encuentra la<br>burger</div>
+
     <div class="cups">
       <div
         v-for="(cup, index) in 3"
@@ -14,50 +16,98 @@
         ></div>
       </div>
     </div>
+    <div class="acciones">
+      <button @click="home" class="boton-icono boton-home">
+        <img src="/icons/casa.svg" alt="Inicio" />
+      </button>
+      <button @click="mostrarInstrucciones('tres-cajas')" class="boton-icono boton-info">
+          <img src="/icons/info.svg" alt="Información" />
+      </button>
+    </div>
 
-    <div class="controls">
+    <PopUpInstrucciones 
+      juego="tres-cajas" 
+      :visible="mostrarPopup" 
+      @cerrar="cerrarInstrucciones"
+      @iniciar="restartGame" />
+
+      <PopUpGanaste
+      juego="tres-cajas" 
+      :visible="result !== null ? result : false" 
+      @iniciar="salir"
+    />
+
+    <PopUpPerdiste
+      juego="tres-cajas"
+      :visible="result !== null ? !result : false" 
+      @cerrar="salir"
+      @iniciar="restartGame"
+    />
+
+    <!-- <div class="controls">
       <button @click="restartGame" :disabled="isShuffling">Reiniciar</button>
       <div v-if="result !== null" class="result">
         {{ result ? '¡Correcto!' : 'Incorrecto, intenta de nuevo.' }}
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import gsap from 'gsap'
+import { useRouter } from 'vue-router'
+
+import PopUpInstrucciones from '../components/Instructions.vue'
+import PopUpGanaste from '../components/PopUpWin.vue'
+import PopUpPerdiste from '../components/PopUpLose.vue'
 
 const revealAtStart = ref(true)
 const cupRefs = ref([])
-const cups = ref([0, 1, 2]) // Mapeo de posiciones visuales
-const ballIndex = ref(Math.floor(Math.random() * 3)) // Índice inicial de la bola
+const cups = ref([0, 1, 2])
+const ballIndex = ref(Math.floor(Math.random() * 3))
 const showBall = ref(false)
 const isShuffling = ref(false)
 const result = ref(null)
+const mostrarPopup = ref(false)
 
-// Posiciones horizontales en vw
-const positions = ['10vw', '40vw', '70vw']
+const router = useRouter()
+const positions = ['20%', '50%', '80%']
 
 onMounted(() => {
-  // Mostrar la bola al inicio antes de la mezcla
-  revealAtStart.value = true;
+  revealAtStart.value = true
   cups.value.forEach((pos, i) => {
     gsap.set(cupRefs.value[i], {
-      x: positions[pos],
+      left: positions[pos],
       y: -40,
-    });
-  });
+    })
+  })
 
-  // Esperamos un tiempo para mostrar la bola y luego iniciamos la mezcla
   setTimeout(() => {
-    revealAtStart.value = false; // Ocultar la bola
-    liftAll(false); // Bajar los vasos
+    revealAtStart.value = false
+    liftAll(false)
     setTimeout(() => {
-      shuffleCups(); // Mezclar los vasos
-    }, 500); // Tiempo para que la animación de los vasos se complete
-  }, 1500); // Esperar antes de comenzar el ciclo de mezcla
-});
+      shuffleCups()
+    }, 500)
+  }, 1500)
+})
+
+function mostrarInstrucciones() {
+  mostrarPopup.value = true
+}
+
+function cerrarInstrucciones() {
+  mostrarPopup.value = false
+}
+
+function salir() {
+  result.value=null;
+  router.push('/')
+}
+
+function home() {
+  router.push('/')
+}
 
 function liftAll(up = true) {
   cupRefs.value.forEach(cup => {
@@ -81,23 +131,21 @@ function shuffleCups() {
       j = Math.floor(Math.random() * 3)
     } while (j === i)
 
-    // Intercambiar lógicamente las posiciones de los vasos
     const temp = cups.value[i]
     cups.value[i] = cups.value[j]
     cups.value[j] = temp
 
-    // Animar los vasos
     const tl = gsap.timeline()
     tl.to(cupRefs.value[i], {
-      x: positions[cups.value[i]],
+      left: positions[cups.value[i]],
       duration: 0.4,
       ease: 'power2.inOut'
     })
     tl.to(cupRefs.value[j], {
-      x: positions[cups.value[j]],
+      left: positions[cups.value[j]],
       duration: 0.4,
       ease: 'power2.inOut'
-    }, '<') // Animación en paralelo
+    }, '<')
 
     count++
     if (count < swaps) {
@@ -113,56 +161,46 @@ function shuffleCups() {
 }
 
 function handleGuess(index) {
-  if (isShuffling.value || showBall.value) return; // No hacer nada mientras se mezclan los vasos o si ya se mostró la bola
+  if (isShuffling.value || showBall.value) return
 
-  // Verificar si el vaso es el correcto
   if (cups.value[index] === ballIndex.value) {
-    // Si es el vaso correcto, asignar el index de la bola
-    ballIndex.value = cups.value[index];
+    ballIndex.value = cups.value[index]
   }
 
-  // Levantar el vaso después de hacer clic
   gsap.to(cupRefs.value[index], {
-    y: -40, // Levantar el vaso
+    y: -40,
     duration: 0.3,
     ease: 'power1.out',
     onComplete: () => {
-      // Después de que el vaso se levante, se muestra la bola
-      showBall.value = true;
-
-      // Verificar si la selección es correcta después de mostrar la bola
-      result.value = cups.value[index] === ballIndex.value; // Verificar si el vaso seleccionado tiene la bola
+      showBall.value = true
+      result.value = cups.value[index] === ballIndex.value
     }
-  });
+  })
 }
 
 function restartGame() {
-  showBall.value = false;
-  result.value = null;  // Reiniciar el resultado antes de la mezcla
-  isShuffling.value = false;
-  ballIndex.value = Math.floor(Math.random() * 3); // Elegir la posición aleatoria de la bola
-  cups.value = [0, 1, 2]; // Restablecer las posiciones originales de los vasos
-
-  // Levantar los vasos y mostrar la bola al inicio
-  revealAtStart.value = true; // Mostrar la bola de nuevo
+  mostrarPopup.value=false
+  showBall.value = false
+  result.value = null
+  isShuffling.value = false
+  ballIndex.value = Math.floor(Math.random() * 3)
+  cups.value = [0, 1, 2]
+  revealAtStart.value = true
 
   cupRefs.value.forEach((cup, i) => {
     gsap.set(cup, {
-      x: positions[cups.value[i]],
+      left: positions[cups.value[i]],
       y: -40,
-    });
-  });
+    })
+  })
 
-  // Asegurarse de que la bola esté en el vaso correcto antes de comenzar la mezcla
   setTimeout(() => {
-    liftAll(false); // Bajar los vasos
-
-    // Después de levantar los vasos, ocultamos la bola para la mezcla
+    liftAll(false)
     setTimeout(() => {
-      revealAtStart.value = false; // Ocultar la bola
-      shuffleCups(); // Iniciar la mezcla de los vasos
-    }, 500); // Asegura que la bola se oculte un poco después de que los vasos bajen
-  }, 1500); // Espera a que los vasos se levanten primero
+      revealAtStart.value = false
+      shuffleCups()
+    }, 500)
+  }, 1500)
 }
 </script>
 
@@ -170,54 +208,107 @@ function restartGame() {
 .game-container {
   width: 100vw;
   height: 100vh;
-  background: #f1f1f1;
+  background-image: url('/images/fondo.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+}
+
+.title {
+  font-size: 4vh;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  text-transform: uppercase;
+  margin-top: 6vh;
+  margin-left: 3vw;
 }
 
 .cups {
   position: relative;
   width: 100%;
-  height: 200px;
-  margin-bottom: 30px;
+  height: 5vh;
+  margin-top: 2vh;
 }
 
 .cup {
+  width: 15vh;
+  height: 15vh;
+  background-image: url('/images/bolsas.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  cursor: pointer;
   position: absolute;
   bottom: 0;
-  width: 60px;
-  height: 100px;
-  background-color: #8b5e3c;
-  border-radius: 0 0 30px 30px;
-  cursor: pointer;
   display: flex;
   align-items: flex-end;
   justify-content: center;
+  transform: translateX(-50%);
 }
 
 .ball {
-  width: 20px;
-  height: 20px;
-  background-color: red;
-  border-radius: 50%;
-  margin-bottom: 10px;
+  width: 10vh;
+  height: 10vh;
+  background-image: url('/images/hamburguesa1.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-bottom: -8vh;
 }
 
 .controls {
-  text-align: center;
-}
-
-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .result {
-  margin-top: 20px;
-  font-size: 18px;
+  margin-top: 16px;
+  font-size: 20px;
   font-weight: bold;
+  color: white;
+  text-shadow: 1px 1px 2px black;
+  text-align: center;
+}
+
+/* Botones fijos abajo */
+.acciones {
+  display: flex;
+  justify-content: space-between;
+  width: 70vw;
+  margin: 3vh auto 5.5vh;
+}
+
+.boton-icono {
+  background-color: white;
+  border: none;
+  border-radius: 50%;
+  width: 8vh;
+  height: 8vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.boton-icono:hover {
+  transform: scale(1.1);
+}
+
+.boton-icono img {
+  width: 4vh;
+  height: 4vh;
+  object-fit: contain;
 }
 </style>

@@ -33,8 +33,6 @@
           </button>
         </div>
       </div>
-
-      <p v-if="perdiste" class="mensaje-derrota">😞 Se acabó el tiempo. ¡Inténtalo de nuevo!</p>
     </div>
 
     <PopUpGanaste
