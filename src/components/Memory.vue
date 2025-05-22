@@ -9,7 +9,7 @@
         <img src="/icons/reloj.svg" alt="Reloj" class="icono-reloj" />
         <span>{{ tiempo }}</span>
       </div>
-
+<div class="area-juego">
       <div class="tablero">
         <div v-for="(carta, index) in cartas" :key="index" class="carta" @click="voltearCarta(index)"
           :class="{ mezclando: mezclando }" :style="mezclando ? `animation-delay: ${index * 0.05}s` : ''">
@@ -22,10 +22,7 @@
             </div>
           </div>
         </div>
-      </div>
-
-      <p v-if="ganaste" class="mensaje-victoria">🎉 ¡Ganaste! 🎉</p>
-      <p v-if="perdiste" class="mensaje-derrota">😞 Se acabó el tiempo. ¡Inténtalo de nuevo!</p>
+      </div>      
 
       <div class="acciones">
         <button @click="reiniciarJuego" class="boton-icono boton-home">
@@ -35,6 +32,9 @@
           <img src="/icons/info.svg" alt="Información" />
         </button>
       </div>
+    </div>
+    <p v-if="ganaste" class="mensaje-victoria">🎉 ¡Ganaste! 🎉</p>
+      <p v-if="perdiste" class="mensaje-derrota">😞 Se acabó el tiempo. ¡Inténtalo de nuevo!</p>
     </div>
   </div>
 </template>
@@ -157,7 +157,7 @@ export default {
   padding: 2vh 4vw;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   justify-content: flex-start;
   text-align: center;
   color: white;
@@ -180,6 +180,7 @@ export default {
   border-radius: 1vh;
   font-size: 3vh;
   margin-bottom: 2vh;
+  align-self: center;
 }
 
 .icono-reloj {
@@ -188,7 +189,7 @@ export default {
 }
 
 .tablero {
-  margin-top: 5vh;
+  margin-top: 3vh;
   display: grid;
   gap: 0.8vh;
   grid-template-columns: repeat(3, 1fr);
@@ -278,15 +279,22 @@ export default {
   color: #ff5050;
 }
 
+.area-juego {
+  width: 70vw; /* igual que el tablero */
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2vh;
+}
+
+
 /* Botones fijos abajo */
 .acciones {
-  position: absolute;
-  bottom: 2vh;
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
-  gap: 5vw;
-  z-index: 2;
+  justify-content: space-between;
+  width: 70vw; 
+  margin: 5vh auto 0; 
 }
 
 .boton-icono {
@@ -311,18 +319,6 @@ export default {
   width: 4vh;
   height: 4vh;
   object-fit: contain;
-}
-
-.boton-home {
-  position: absolute;
-  bottom: 2vh;
-  left: 3vw;
-}
-
-.boton-info {
-  position: absolute;
-  bottom: 2vh;
-  right: 3vw;
 }
 
 /* 📱 Adaptación a pantallas pequeñas */
