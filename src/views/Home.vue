@@ -129,8 +129,9 @@ export default {
 /* Responsivo para celulares pequeños */
 @media (max-width: 480px) {
   .contenido {
-    height: 100vh;
+    height: 80vh;
     padding: 1.5rem 1rem;
+    margin-top: 0vh;
   }
 
   .titulo-img {
@@ -138,16 +139,31 @@ export default {
   }
 
   .texto h2 {
-    font-size: 1.5rem;
+    font-size: 2rem;
   }
 
   .texto p {
-    font-size: 0.95rem;
+    font-size: 1rem;
   }
 
-  .btn {
-    font-size: 0.95rem;
-    padding: 1rem;
-  }
+  .botones {
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center; /* Alinea al centro */
+}
+
+.btn {
+  width: 100%;           /* Que no se limite al 100% del contenedor si este es pequeño */
+  height: 4rem;         /* Fija la altura */
+  font-size: 0.95rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  padding: 1rem;
+}
+
 }
 </style>
