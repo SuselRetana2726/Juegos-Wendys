@@ -9,38 +9,67 @@
         <img src="/icons/reloj.svg" alt="Reloj" class="icono-reloj" />
         <span>{{ tiempo }}</span>
       </div>
-<div class="area-juego">
-      <div class="tablero">
-        <div v-for="(carta, index) in cartas" :key="index" class="carta" @click="voltearCarta(index)"
-          :class="{ mezclando: mezclando }" :style="mezclando ? `animation-delay: ${index * 0.05}s` : ''">
-          <div class="card-inner" :class="{ girada: carta.volteada || carta.encontrada }">
-            <div class="card-front">
-              <img src="/images/card.png" alt="Reverso" />
-            </div>
-            <div class="card-back">
-              <img :src="`/images/${carta.valor}.png`" :alt="carta.valor" />
+      <div class="area-juego">
+        <div class="tablero">
+          <div v-for="(carta, index) in cartas" :key="index" class="carta" @click="voltearCarta(index)"
+            :class="{ mezclando: mezclando }" :style="mezclando ? `animation-delay: ${index * 0.05}s` : ''">
+            <div class="card-inner" :class="{ girada: carta.volteada || carta.encontrada }">
+              <div class="card-front">
+                <img src="/images/card.png" alt="Reverso" />
+              </div>
+              <div class="card-back">
+                <img :src="`/images/${carta.valor}.png`" :alt="carta.valor" />
+              </div>
             </div>
           </div>
         </div>
-      </div>      
 
-      <div class="acciones">
-        <button @click="reiniciarJuego" class="boton-icono boton-home">
-          <img src="/icons/casa.svg" alt="Inicio" />
-        </button>
-        <button class="boton-icono boton-info">
-          <img src="/icons/info.svg" alt="Información" />
-        </button>
+        <div class="acciones">
+          <button @click="home" class="boton-icono boton-home">
+            <img src="/icons/casa.svg" alt="Inicio" />
+          </button>
+          <button @click="mostrarInstrucciones('memoria')" class="boton-icono boton-info">
+            <img src="/icons/info.svg" alt="Información" />
+          </button>
+        </div>
       </div>
-    </div>
-    <p v-if="ganaste" class="mensaje-victoria">🎉 ¡Ganaste! 🎉</p>
+
       <p v-if="perdiste" class="mensaje-derrota">😞 Se acabó el tiempo. ¡Inténtalo de nuevo!</p>
     </div>
+
+    <PopUpGanaste
+      :juego="juegoSeleccionado" 
+      :visible="ganaste" 
+      @iniciar="aceptarGanaste"
+    />
+    <PopUpPerdiste
+      :juego="juegoSeleccionado" 
+      :visible="perdiste" 
+      @cerrar="salirPerdiste"
+      @iniciar="reiniciarPerdiste"
+    />
+    <PopUpInstrucciones 
+      :juego="juegoSeleccionado" 
+      :visible="mostrarPopup" 
+      @cerrar="cerrarPopup"
+      @iniciar="iniciarJuego" />
   </div>
+
+
+
 </template>
 
 <script>
+import PopUpInstrucciones from '../components/Instructions.vue'
+import PopUpGanaste from '../components/PopUpWin.vue'
+import PopUpPerdiste from '../components/PopUpLose.vue'
+
 export default {
+  components: {
+        PopUpInstrucciones,
+        PopUpGanaste,
+        PopUpPerdiste,
+    },
   data() {
     return {
       cartas: [],
@@ -51,13 +80,39 @@ export default {
       temporizador: null,
       ganaste: false,
       perdiste: false,
-      mezclando: false
+      mezclando: false,
+      juegoSeleccionado: 'memoria',
+      mostrarPopup: false,
     };
   },
   created() {
     this.reiniciarJuego();
   },
   methods: {
+    aceptarGanaste() {            
+            this.ganaste = false
+            this.$router.push('/')
+        },
+    home(){this.$router.push('/')},
+    mostrarInstrucciones(juego) {
+      this.juegoSeleccionado = juego
+      this.mostrarPopup = true
+    },
+    cerrarPopup() {
+      this.mostrarPopup = false
+    },
+    reiniciarPerdiste() {
+      this.perdiste = false
+      this.reiniciarJuego();
+    },
+    salirPerdiste() {
+      this.perdiste = false
+      this.$router.push('/')
+    },
+    iniciarJuego() {
+      this.mostrarPopup = false
+      this.reiniciarJuego();
+    },
     generarCartas() {
       const valoresBase = ['hamburguesa1', 'hamburguesa2', 'Llama', 'logo', 'personaje', 'titulo'];
       const valores = [...valoresBase, ...valoresBase];
@@ -117,7 +172,7 @@ export default {
       this.primeraCarta = null;
       this.segundaCarta = null;
       this.bloqueo = true;
-      this.tiempo = 40;
+      this.tiempo = 30;
       this.ganaste = false;
       this.perdiste = false;
       clearInterval(this.temporizador);
@@ -242,6 +297,7 @@ export default {
   object-fit: contain;
   margin: auto;
 }
+
 .card-back {
   transform: rotateY(180deg);
 }
@@ -254,12 +310,15 @@ export default {
   0% {
     transform: translateY(0) scale(1);
   }
+
   30% {
     transform: translateY(-2vh) scale(1.1) rotate(5deg);
   }
+
   60% {
     transform: translateY(2vh) scale(0.9) rotate(-5deg);
   }
+
   100% {
     transform: translateY(0) scale(1);
   }
@@ -280,7 +339,8 @@ export default {
 }
 
 .area-juego {
-  width: 70vw; /* igual que el tablero */
+  width: 70vw;
+  /* igual que el tablero */
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -293,8 +353,8 @@ export default {
 .acciones {
   display: flex;
   justify-content: space-between;
-  width: 70vw; 
-  margin: 5vh auto 0; 
+  width: 70vw;
+  margin: 5vh auto 0;
 }
 
 .boton-icono {

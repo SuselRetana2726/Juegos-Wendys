@@ -1,36 +1,27 @@
 <template>
   <div v-if="visible" class="popup-overlay">
     <div class="popup-box">
-      <button class="cerrar-boton" @click="cerrar">
-        <img src="/icons/cerrar.svg" alt="Cerrar" />
-      </button>
+      <img
+        src="/images/hamburguesa1.png"
+        alt="icono popup"
+        class="popup-icono"
+      />
 
       <h2 class="titulo-popup">
-        {{ juego === 'memoria' ? 'MEMORIZA TU COMBO' : 'ENCUENTRA LA BURGER' }}
+        {{ juego === 'memoria' ? '¡GANASTE!' : '¡LA ENCONTRASTE!' }}
       </h2>
 
       <div class="contenido-popup">
-        <p class="subtitulo">INSTRUCCIONES</p>
         <div v-if="juego === 'memoria'">
-          <p>¡Tendrás que recordar dónde están las imágenes! ¿Podrás hacer coincidir los pares?</p>
-          <ol>
-            <li>Toca una carta para descubrir la imagen.</li>
-            <li>Luego toca otra e intenta encontrar la pareja.</li>
-            <li>Encuentra todos los pares antes que se termine el tiempo.</li>
-          </ol>
+          <p>¡Felicidades! Tienes una memoria increíble. Has armado el combo perfecto y ganaste una sorpresa deliciosa.</p>
         </div>
         <div v-else-if="juego === 'tres-cajas'">
-          <p>¡Pon a prueba tu instinto y tu suerte!</p>
-          <ol>
-            <li>Tres bolsas...</li>
-            <li>Una burger escondida...</li>
-            <li>¡Elige bien y gana una sorpresa sabrosa!</li>
-          </ol>
+          <p>¡Buen ojo! Elegiste la bolsa correcta y encontraste la burger ganadora.</p>
         </div>
-        <p class="mensaje-final">¡Si lo logras, ganas una sorpresa deliciosa!</p>
+        <p class="mensaje-final">Pregunta por tu sorpresa.</p>
       </div>
 
-      <button class="boton-iniciar" @click="iniciar">Iniciar juego</button>
+      <button class="boton-iniciar" @click="iniciar">Aceptar</button>
     </div>
   </div>
 </template>
@@ -41,11 +32,8 @@ export default {
     juego: String,
     visible: Boolean
   },
-  emits: ['cerrar', 'iniciar'],
+  emits: ['iniciar'],
   methods: {
-    cerrar() {
-      this.$emit('cerrar');
-    },
     iniciar() {
       this.$emit('iniciar');
     }
@@ -80,45 +68,21 @@ export default {
 
 .popup-box h2 {
   font-size: 3vh;
-  color: #00aaff;
+  color: #f7b733;
   font-weight: 900; 
   line-height: 1.2;
   margin-bottom: 2vh;
   text-transform: uppercase;
   text-shadow:
-    0.5px 0 #00aaff,
-    -0.5px 0 #00aaff,
-    0 0.5px #00aaff,
-    0 -0.5px #00aaff;
-}
-
-.cerrar-boton {
-  position: absolute;
-  top: -1.5vh;  
-  right: -1.5vh;
-  background: #fff; /* fondo blanco */
-  border: 2px solid #7C0A02;
-  border-radius: 50%; /* círculo */
-  width: 5vh;
-  height: 5vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  cursor: pointer;
-  box-sizing: border-box;
-  box-shadow: 0 0 5px rgba(124, 10, 2, 0.5);
-  z-index: 10;
-}
-
-.cerrar-boton img {
-  width: 2.5vh;
-  height: 2.5vh;
+    0.5px 0 #f7b733,
+    -0.5px 0 #f7b733,
+    0 0.5px #f7b733,
+    0 -0.5px #f7b733;
 }
 
 .titulo-popup {
   font-size: 2.8vh; /* más pequeño */
-  color: #00aaff;
+  color: #f7b733;
   font-weight: bold;
   margin-bottom: 2vh;
   text-transform: uppercase;
@@ -162,9 +126,47 @@ export default {
   cursor: pointer;
   width: 100%;
   transition: background 0.2s ease;
+  margin-top: 2vh;
 }
 
 .boton-iniciar:hover {
   background-color: #f9c542;
 }
+
+.popup-icono {
+  object-fit: contain;
+  margin: 0 auto 0.5svh;
+  display: block;
+  animation: animacionHamburguesa 1.2s infinite ease-in-out;}
+
+@keyframes animacionHamburguesa {
+  0% {
+    transform: scale(1) rotate(0deg) translate(0, 0);
+    filter: brightness(1);
+  }
+  25% {
+    transform: scale(1.03) rotate(1deg) translate(-1px, 1px);
+    filter: brightness(1.1);
+  }
+  50% {
+    transform: scale(1.05) rotate(-1deg) translate(1px, -1px);
+    filter: brightness(1.2);
+  }
+  75% {
+    transform: scale(1.03) rotate(1deg) translate(-1px, 0px);
+    filter: brightness(1.1);
+  }
+  100% {
+    transform: scale(1) rotate(0deg) translate(0, 0);
+    filter: brightness(1);
+  }
+}
+.contenido-popup {
+  font-size: 1.6vh;
+  color: #000;
+  text-align: center; /* ← centramos los párrafos */
+  margin-bottom: 2vh;
+  margin-top: 4vh;  
+}
+
 </style>
