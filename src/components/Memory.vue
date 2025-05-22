@@ -67,7 +67,6 @@ export default {
       return mezcladas;
     },
     voltearCarta(index) {
-
       if (this.ganaste || this.perdiste) return;
       const carta = this.cartas[index];
       if (this.bloqueo || carta.volteada || carta.encontrada) return;
@@ -133,13 +132,14 @@ export default {
   }
 };
 </script>
-
 <style scoped>
 .juego-memoria {
   width: 100vw;
   height: 100vh;
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .fondo {
@@ -153,10 +153,20 @@ export default {
 .contenido {
   position: relative;
   z-index: 1;
-  padding: 20px;
+  flex: 1;
+  padding: 2vh 4vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
   text-align: center;
   color: white;
   font-weight: bold;
+}
+
+.contenido h2 {
+  font-size: 4vh;
+  margin-bottom: 2vh;
 }
 
 .temporizador {
@@ -164,53 +174,31 @@ export default {
   color: #000;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 5px 10px;
-  border-radius: 8px;
-  margin: 10px 0;
+  gap: 1vh;
+  padding: 1vh 2vh;
+  border-radius: 1vh;
+  font-size: 3vh;
+  margin-bottom: 2vh;
 }
 
 .icono-reloj {
-  width: 20px;
-  height: 20px;
+  width: 3.5vh;
+  height: 3.5vh;
 }
 
 .tablero {
   display: grid;
-  grid-template-columns: repeat(3, 100px);
-  grid-template-rows: repeat(4, 100px);
-  gap: 10px;
-  justify-content: center;
-  margin: 20px auto;
+  gap: 2vh;
+  grid-template-columns: repeat(3, 1fr);
+  width: 90vw;
+  flex-grow: 1;
+  max-height: 100%;
 }
 
 .carta {
-  perspective: 800px;
-  width: 100px;
-  height: 100px;
-}
-
-/* Animación de mezcla tipo truco de manos */
-.mezclando {
-  animation: mezclar 0.6s ease-in-out forwards;
-}
-
-@keyframes mezclar {
-  0% {
-    transform: translateY(0) scale(1);
-  }
-
-  30% {
-    transform: translateY(-20px) scale(1.1) rotate(5deg);
-  }
-
-  60% {
-    transform: translateY(20px) scale(0.9) rotate(-5deg);
-  }
-
-  100% {
-    transform: translateY(0) scale(1);
-  }
+  perspective: 1000px;
+  width: 100%;
+  aspect-ratio: 1/1;
 }
 
 .card-inner {
@@ -231,7 +219,7 @@ export default {
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
-  border-radius: 10px;
+  border-radius: 1vh;
 }
 
 .card-front img,
@@ -239,17 +227,36 @@ export default {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  border-radius: 10px;
+  border-radius: 1vh;
 }
 
 .card-back {
   transform: rotateY(180deg);
 }
 
+.mezclando {
+  animation: mezclar 0.6s ease-in-out forwards;
+}
+
+@keyframes mezclar {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  30% {
+    transform: translateY(-2vh) scale(1.1) rotate(5deg);
+  }
+  60% {
+    transform: translateY(2vh) scale(0.9) rotate(-5deg);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
 .mensaje-victoria,
 .mensaje-derrota {
-  font-size: 18px;
-  margin-top: 10px;
+  font-size: 3vh;
+  margin-top: 2vh;
 }
 
 .mensaje-victoria {
@@ -260,13 +267,14 @@ export default {
   color: #ff5050;
 }
 
+/* Botones fijos abajo */
 .acciones {
   position: absolute;
-  bottom: 4vh;
+  bottom: 2vh;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 4vw;
+  gap: 5vw;
   z-index: 2;
 }
 
@@ -274,8 +282,8 @@ export default {
   background-color: white;
   border: none;
   border-radius: 50%;
-  width: clamp(50px, 6vw, 80px);
-  height: clamp(50px, 6vw, 80px);
+  width: 8vh;
+  height: 8vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -289,20 +297,60 @@ export default {
 }
 
 .boton-icono img {
-  width: 50%;
-  height: 50%;
+  width: 4vh;
+  height: 4vh;
   object-fit: contain;
 }
 
 .boton-home {
   position: absolute;
-  bottom: 4vh;
-  left: 4vw;
+  bottom: 2vh;
+  left: 3vw;
 }
 
 .boton-info {
   position: absolute;
-  bottom: 4vh;
-  right: 4vw;
+  bottom: 2vh;
+  right: 3vw;
+}
+
+/* 📱 Adaptación a pantallas pequeñas */
+@media (max-width: 768px) {
+  .contenido h2 {
+    font-size: 3vh;
+  }
+
+  .temporizador {
+    font-size: 2.5vh;
+  }
+
+  .icono-reloj {
+    width: 2.5vh;
+    height: 2.5vh;
+  }
+
+  .tablero {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5vh;
+  }
+
+  .acciones {
+    gap: 4vw;
+  }
+
+  .boton-icono {
+    width: 7vh;
+    height: 7vh;
+  }
+
+  .boton-icono img {
+    width: 3.5vh;
+    height: 3.5vh;
+  }
+
+  .mensaje-victoria,
+  .mensaje-derrota {
+    font-size: 2.5vh;
+  }
 }
 </style>
