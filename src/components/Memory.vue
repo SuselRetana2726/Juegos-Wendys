@@ -18,7 +18,7 @@
                 <img src="/images/card.png" alt="Reverso" />
               </div>
               <div class="card-back">
-                <img :src="`/images/${carta.valor}.png`" :alt="carta.valor" />
+                <img :src="getImagenCarta(carta.valor)" :alt="carta.valor" />
               </div>
             </div>
           </div>
@@ -87,6 +87,9 @@ export default {
     this.reiniciarJuego();
   },
   methods: {
+    getImagenCarta(valor) {
+      return `${import.meta.env.BASE_URL}images/${valor}.png`;
+    },
     aceptarGanaste() {            
             this.ganaste = false
             this.$router.push('/')
