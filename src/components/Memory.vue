@@ -1,20 +1,40 @@
 <template>
-  <div>
-    <h2>🧠 Juego de Memoria</h2>
-    <p>Tiempo restante: {{ tiempo }} segundos</p>
-    <button @click="reiniciarJuego">Reiniciar Juego</button>
+  <div class="juego-memoria">
+    <img src="/images/fondo.png" alt="Fondo" class="fondo" />
 
-    <div class="tablero">
-      <div 
-        v-for="(carta, index) in cartas" 
-        :key="index" 
-        class="carta"
-        @click="voltearCarta(index)"
-      >
-        <div class="contenido" :class="{ volteada: carta.volteada || carta.encontrada }">
-          {{ carta.volteada || carta.encontrada ? carta.valor : '?' }}
-        </div>
+    <div class="contenido">
+      <h2>MEMORIZA TU <br>COMBO</h2>
+
+      <div class="temporizador">
+        <img src="/icons/reloj.svg" alt="Reloj" class="icono-reloj" />
+        <span>{{ tiempo }}</span>
       </div>
+<div class="area-juego">
+      <div class="tablero">
+        <div v-for="(carta, index) in cartas" :key="index" class="carta" @click="voltearCarta(index)"
+          :class="{ mezclando: mezclando }" :style="mezclando ? `animation-delay: ${index * 0.05}s` : ''">
+          <div class="card-inner" :class="{ girada: carta.volteada || carta.encontrada }">
+            <div class="card-front">
+              <img src="/images/card.png" alt="Reverso" />
+            </div>
+            <div class="card-back">
+              <img :src="`/images/${carta.valor}.png`" :alt="carta.valor" />
+            </div>
+          </div>
+        </div>
+      </div>      
+
+      <div class="acciones">
+        <button @click="reiniciarJuego" class="boton-icono boton-home">
+          <img src="/icons/casa.svg" alt="Inicio" />
+        </button>
+        <button class="boton-icono boton-info">
+          <img src="/icons/info.svg" alt="Información" />
+        </button>
+      </div>
+    </div>
+    <p v-if="ganaste" class="mensaje-victoria">🎉 ¡Ganaste! 🎉</p>
+      <p v-if="perdiste" class="mensaje-derrota">😞 Se acabó el tiempo. ¡Inténtalo de nuevo!</p>
     </div>
   </div>
 </template>
@@ -23,135 +43,321 @@
 export default {
   data() {
     return {
-      tiempo: 30,
-      timerId: null,
       cartas: [],
-      primeraCartaIndex: null,
-      segundaCartaIndex: null,
-      bloquearTablero: false,
-      parejasEncontradas: 0
-    }
+      primeraCarta: null,
+      segundaCarta: null,
+      bloqueo: false,
+      tiempo: 30,
+      temporizador: null,
+      ganaste: false,
+      perdiste: false,
+      mezclando: false
+    };
   },
   created() {
-    this.iniciarTemporizador()
-    this.generarCartas()
-  },
-  beforeUnmount() {
-    clearInterval(this.timerId)
+    this.reiniciarJuego();
   },
   methods: {
-    iniciarTemporizador() {
-      this.tiempo = 30
-      this.timerId = setInterval(() => {
-        if (this.tiempo > 0) {
-          this.tiempo--
-        } else {
-          clearInterval(this.timerId)
-          alert('Se acabó el tiempo, perdiste 😞')
-          this.reiniciarJuego()
-        }
-      }, 1000)
-    },
     generarCartas() {
-      // Valores: pares del 1 al 6 para total 12 cartas
-      let valores = [1,2,3,4,5,6]
-      // Duplicar valores para hacer pares
-      valores = valores.concat(valores)
-      // Barajar las cartas
-      this.cartas = valores
+      const valoresBase = ['hamburguesa1', 'hamburguesa2', 'Llama', 'logo', 'personaje', 'titulo'];
+      const valores = [...valoresBase, ...valoresBase];
+      const mezcladas = valores
         .map(valor => ({ valor, volteada: false, encontrada: false }))
-        .sort(() => Math.random() - 0.5)
+        .sort(() => 0.5 - Math.random());
+      return mezcladas;
     },
     voltearCarta(index) {
-      if (this.bloquearTablero) return
-      let carta = this.cartas[index]
-      if (carta.volteada || carta.encontrada) return
-      
-      this.cartas[index].volteada = true
+      if (this.ganaste || this.perdiste) return;
+      const carta = this.cartas[index];
+      if (this.bloqueo || carta.volteada || carta.encontrada) return;
 
-      if (this.primeraCartaIndex === null) {
-        this.primeraCartaIndex = index
-      } else {
-        this.segundaCartaIndex = index
-        this.bloquearTablero = true
-        this.revisarPareja()
-      }
-    },
-    revisarPareja() {
-      const primeraCarta = this.cartas[this.primeraCartaIndex]
-      const segundaCarta = this.cartas[this.segundaCartaIndex]
+      carta.volteada = true;
 
-      if (primeraCarta.valor === segundaCarta.valor) {
-        // Pareja encontrada
-        this.cartas[this.primeraCartaIndex].encontrada = true
-        this.cartas[this.segundaCartaIndex].encontrada = true
-        this.parejasEncontradas++
-        this.resetTurno()
-        if (this.parejasEncontradas === 6) {
-          clearInterval(this.timerId)
-          alert('¡Ganaste! 🎉')
-          // Aquí puedes disparar evento o mostrar popup ganador
-        }
-      } else {
-        // No es pareja, voltearlas de nuevo después de un segundo
+      if (!this.primeraCarta) {
+        this.primeraCarta = { carta, index };
+      } else if (!this.segundaCarta) {
+        this.segundaCarta = { carta, index };
+        this.bloqueo = true;
+
         setTimeout(() => {
-          this.cartas[this.primeraCartaIndex].volteada = false
-          this.cartas[this.segundaCartaIndex].volteada = false
-          this.resetTurno()
-        }, 1000)
+          const { carta: primera } = this.primeraCarta;
+          const { carta: segunda } = this.segundaCarta;
+
+          if (primera.valor === segunda.valor) {
+            primera.encontrada = true;
+            segunda.encontrada = true;
+          } else {
+            primera.volteada = false;
+            segunda.volteada = false;
+          }
+
+          this.primeraCarta = null;
+          this.segundaCarta = null;
+          this.bloqueo = false;
+
+          if (this.cartas.every(c => c.encontrada)) {
+            this.ganaste = true;
+            clearInterval(this.temporizador);
+          }
+        }, 1000);
       }
     },
-    resetTurno() {
-      this.primeraCartaIndex = null
-      this.segundaCartaIndex = null
-      this.bloquearTablero = false
+    iniciarTemporizador() {
+      this.temporizador = setInterval(() => {
+        if (this.tiempo > 0) {
+          this.tiempo--;
+        } else {
+          clearInterval(this.temporizador);
+          this.perdiste = true;
+        }
+      }, 1000);
     },
     reiniciarJuego() {
-      clearInterval(this.timerId)
-      this.parejasEncontradas = 0
-      this.generarCartas()
-      this.iniciarTemporizador()
-      this.resetTurno()
+      this.cartas = this.generarCartas();
+      this.primeraCarta = null;
+      this.segundaCarta = null;
+      this.bloqueo = true;
+      this.tiempo = 40;
+      this.ganaste = false;
+      this.perdiste = false;
+      clearInterval(this.temporizador);
+
+      this.mezclando = true;
+      setTimeout(() => {
+        this.mezclando = false;
+        this.bloqueo = false;
+        this.iniciarTemporizador();
+      }, 1500);
     }
   }
-}
+};
 </script>
-
 <style scoped>
-.tablero {
-  display: grid;
-  grid-template-columns: repeat(3, 100px);
-  grid-template-rows: repeat(4, 130px);
-  gap: 10px;
-  margin-top: 20px;
+.juego-memoria {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
-.carta {
-  background: #ccc;
-  border-radius: 8px;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 40px;
-  user-select: none;
-  box-shadow: 0 0 5px #999;
-  transition: transform 0.3s;
+.fondo {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
 }
 
 .contenido {
-  width: 90px;
-  height: 120px;
-  background: #eee;
-  border-radius: 8px;
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  padding: 2vh 4vw;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  text-align: center;
+  color: white;
+  font-weight: bold;
 }
 
-.volteada {
-  background: #6cf;
-  font-weight: bold;
-  font-size: 60px;
+.contenido h2 {
+  margin-top: 5vh;
+  font-size: 4vh;
+  margin-bottom: 2vh;
+}
+
+.temporizador {
+  background: #00bfff;
+  color: #000;
+  display: inline-flex;
+  align-items: center;
+  gap: 1vh;
+  padding: 1vh 2vh;
+  border-radius: 1vh;
+  font-size: 3vh;
+  margin-bottom: 2vh;
+  align-self: center;
+}
+
+.icono-reloj {
+  width: 3.5vh;
+  height: 3.5vh;
+}
+
+.tablero {
+  margin-top: 3vh;
+  display: grid;
+  gap: 0.8vh;
+  grid-template-columns: repeat(3, 1fr);
+  width: 70vw;
+  flex-grow: 1;
+  max-height: 50vh;
+}
+
+.carta {
+  perspective: 1000px;
+  width: 100%;
+  aspect-ratio: 1/1;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s ease;
+  transform-style: preserve-3d;
+}
+
+.card-inner.girada {
+  transform: rotateY(180deg);
+}
+
+.card-inner.girada .card-back {
+  background-color: white;
+}
+
+.card-front,
+.card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 1vh;
+}
+
+.card-front img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 1vh;
+}
+
+.card-back img {
+  width: 90%;
+  height: 90%;
+  object-fit: contain;
+  margin: auto;
+}
+.card-back {
+  transform: rotateY(180deg);
+}
+
+.mezclando {
+  animation: mezclar 0.6s ease-in-out forwards;
+}
+
+@keyframes mezclar {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  30% {
+    transform: translateY(-2vh) scale(1.1) rotate(5deg);
+  }
+  60% {
+    transform: translateY(2vh) scale(0.9) rotate(-5deg);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.mensaje-victoria,
+.mensaje-derrota {
+  font-size: 3vh;
+  margin-top: 2vh;
+}
+
+.mensaje-victoria {
+  color: #00ff00;
+}
+
+.mensaje-derrota {
+  color: #ff5050;
+}
+
+.area-juego {
+  width: 70vw; /* igual que el tablero */
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2vh;
+}
+
+
+/* Botones fijos abajo */
+.acciones {
+  display: flex;
+  justify-content: space-between;
+  width: 70vw; 
+  margin: 5vh auto 0; 
+}
+
+.boton-icono {
+  background-color: white;
+  border: none;
+  border-radius: 50%;
+  width: 8vh;
+  height: 8vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.boton-icono:hover {
+  transform: scale(1.1);
+}
+
+.boton-icono img {
+  width: 4vh;
+  height: 4vh;
+  object-fit: contain;
+}
+
+/* 📱 Adaptación a pantallas pequeñas */
+@media (max-width: 768px) {
+  .contenido h2 {
+    font-size: 3vh;
+  }
+
+  .temporizador {
+    font-size: 2.5vh;
+  }
+
+  .icono-reloj {
+    width: 2.5vh;
+    height: 2.5vh;
+  }
+
+  .tablero {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5vh;
+  }
+
+  .acciones {
+    gap: 4vw;
+  }
+
+  .boton-icono {
+    width: 7vh;
+    height: 7vh;
+  }
+
+  .boton-icono img {
+    width: 3.5vh;
+    height: 3.5vh;
+  }
+
+  .mensaje-victoria,
+  .mensaje-derrota {
+    font-size: 2.5vh;
+  }
 }
 </style>
