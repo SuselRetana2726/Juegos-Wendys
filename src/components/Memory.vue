@@ -3,7 +3,7 @@
     <img src="/images/fondo.png" alt="Fondo" class="fondo" />
 
     <div class="contenido">
-      <h2>MEMORIZA TU COMBO</h2>
+      <h2>MEMORIZA TU <br>COMBO</h2>
 
       <div class="temporizador">
         <img src="/icons/reloj.svg" alt="Reloj" class="icono-reloj" />
@@ -165,6 +165,7 @@ export default {
 }
 
 .contenido h2 {
+  margin-top: 5vh;
   font-size: 4vh;
   margin-bottom: 2vh;
 }
@@ -187,12 +188,13 @@ export default {
 }
 
 .tablero {
+  margin-top: 5vh;
   display: grid;
-  gap: 2vh;
+  gap: 0.8vh;
   grid-template-columns: repeat(3, 1fr);
-  width: 90vw;
+  width: 70vw;
   flex-grow: 1;
-  max-height: 100%;
+  max-height: 50vh;
 }
 
 .carta {
@@ -213,6 +215,10 @@ export default {
   transform: rotateY(180deg);
 }
 
+.card-inner.girada .card-back {
+  background-color: white;
+}
+
 .card-front,
 .card-back {
   position: absolute;
@@ -222,14 +228,19 @@ export default {
   border-radius: 1vh;
 }
 
-.card-front img,
-.card-back img {
+.card-front img {
   width: 100%;
   height: 100%;
   object-fit: contain;
   border-radius: 1vh;
 }
 
+.card-back img {
+  width: 90%;
+  height: 90%;
+  object-fit: contain;
+  margin: auto;
+}
 .card-back {
   transform: rotateY(180deg);
 }
