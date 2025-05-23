@@ -13,6 +13,7 @@
         <div
           class="ball"
           v-if="(revealAtStart || showBall) && index === ballIndex"
+          :ref="el => { if(revealAtStart) ballRef = el }"
         ></div>
       </div>
     </div>
@@ -60,6 +61,7 @@ import PopUpInstrucciones from '../components/Instructions.vue'
 import PopUpGanaste from '../components/PopUpWin.vue'
 import PopUpPerdiste from '../components/PopUpLose.vue'
 
+const ballRef = ref(null)
 const revealAtStart = ref(true)
 const cupRefs = ref([])
 const cups = ref([0, 1, 2])
@@ -82,11 +84,12 @@ onMounted(() => {
   })
 
   setTimeout(() => {
-    revealAtStart.value = false
-    liftAll(false)
+    // Animar hamburguesa entrando en la bolsa y desapareciendo
+    animateBallIntoCup()
+    // Luego de un delay, iniciar el shuffle
     setTimeout(() => {
       shuffleCups()
-    }, 500)
+    }, 1000)
   }, 1500)
 })
 
@@ -105,6 +108,23 @@ function salir() {
 
 function home() {
   router.push('/')
+}
+
+function animateBallIntoCup() {
+  if (!ballRef.value) return
+
+ gsap.to(ballRef.value, {
+  y: 50,
+  scale: 0.8,
+  opacity: 0,
+  duration: 1,
+  ease: 'power2.inOut',
+  onComplete: () => {
+    revealAtStart.value = false
+    showBall.value = false
+    gsap.set(ballRef.value, { y: 0, scale: 1, opacity: 1 }) // reset para la próxima vez
+  }
+})
 }
 
 function liftAll(up = true) {
@@ -195,11 +215,10 @@ function restartGame() {
   })
 
   setTimeout(() => {
-    liftAll(false)
+    animateBallIntoCup()
     setTimeout(() => {
-      revealAtStart.value = false
       shuffleCups()
-    }, 500)
+    }, 1000)
   }, 1500)
 }
 </script>
@@ -255,13 +274,17 @@ function restartGame() {
 }
 
 .ball {
+  position: absolute;
+  bottom: 15vh; /* un poco arriba de la bolsa */
+  left: 50%;
+  transform: translateX(-50%);
+
   width: 10vh;
   height: 10vh;
   background-image: url('/images/hamburguesa1.png');
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  margin-bottom: -8vh;
 }
 
 .controls {
