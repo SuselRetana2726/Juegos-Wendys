@@ -31,25 +31,23 @@
       @cerrar="cerrarInstrucciones"
       @iniciar="restartGame" />
 
-      <PopUpGanaste
+      <transition name="fade-scale">
+        <PopUpGanaste
       juego="tres-cajas" 
       :visible="result !== null ? result : false" 
       @iniciar="salir"
     />
-
-    <PopUpPerdiste
+      </transition>
+      
+    <transition name="fade-scale">
+      <PopUpPerdiste
       juego="tres-cajas"
       :visible="result !== null ? !result : false" 
       @cerrar="salir"
       @iniciar="restartGame"
     />
-
-    <!-- <div class="controls">
-      <button @click="restartGame" :disabled="isShuffling">Reiniciar</button>
-      <div v-if="result !== null" class="result">
-        {{ result ? '¡Correcto!' : 'Incorrecto, intenta de nuevo.' }}
-      </div>
-    </div> -->
+    </transition>
+    
   </div>
 </template>
 
@@ -173,7 +171,9 @@ function handleGuess(index) {
     ease: 'power1.out',
     onComplete: () => {
       showBall.value = true
-      result.value = cups.value[index] === ballIndex.value
+      setTimeout(() => {
+        result.value = cups.value[index] === ballIndex.value
+      }, 1000)
     }
   })
 }
@@ -311,4 +311,17 @@ function restartGame() {
   height: 4vh;
   object-fit: contain;
 }
+
+.fade-scale-enter-active, .fade-scale-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-scale-enter-from, .fade-scale-leave-to {
+  opacity: 0;
+}
+
+.fade-scale-enter-to, .fade-scale-leave-from {
+  opacity: 1;
+}
+
 </style>
