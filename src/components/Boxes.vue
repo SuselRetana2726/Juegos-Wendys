@@ -13,7 +13,7 @@
     <div
       class="ball"
       v-if="revealAtStart || showObjects"
-      :ref="el => { if (revealAtStart) objectRefs[cupIndex] = el }"
+      :ref="el => { objectRefs[cupIndex] = el }"
       :style="{
         backgroundImage: `url('${getImagenCarta(contents[logicalContents[cupIndex]] === 'burger' ? 'hamburguesa1.png' : 'Llama.png')}')`
       }"
@@ -56,7 +56,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import gsap from 'gsap'
 import { useRouter } from 'vue-router'
 
@@ -102,6 +102,25 @@ onMounted(() => {
     }, 1000)
   }, 1500)
 })
+
+function animateObjectsOutOfCups() {
+  contents.value.forEach((_, i) => {
+    const el = objectRefs.value[i]
+    if (!el) return
+
+    // Empezar desde posición "dentro de la taza"
+    gsap.set(el, { y: 50, scale: 0.8, opacity: 0 })
+
+    // Animar para que "salgan"
+    gsap.to(el, {
+      y: 0,
+      scale: 1,
+      opacity: 1,
+      duration: 1,
+      ease: 'power2.inOut'
+    })
+  })
+}
 
 function animateObjectsIntoCups() {
   contents.value.forEach((_, i) => {
@@ -201,8 +220,14 @@ function handleGuess(index) {
     y: -40,
     duration: 0.3,
     ease: 'power1.out',
-    onComplete: () => {
+    onComplete: async () => {
       showObjects.value = true
+
+      // Esperar a que Vue actualice el DOM y aparezcan los .ball
+      await nextTick()
+
+      animateObjectsOutOfCups()
+
       setTimeout(() => {
         const contentIndex = logicalContents.value[index]
         result.value = contents.value[contentIndex] === 'burger'
