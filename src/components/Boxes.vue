@@ -3,22 +3,23 @@
     <div class="title">Encuentra la<br>burger</div>
 
     <div class="cups">
-      <div
-    v-for="(cupIndex, index) in cupOrder"
-    :key="cupIndex"
-    class="cup"
-    :ref="el => cupRefs[cupIndex] = el"
-    @click="handleGuess(cupIndex)"
-  >
     <div
-      class="ball"
-      v-if="revealAtStart || showObjects"
-      :ref="el => { objectRefs[cupIndex] = el }"
-      :style="{
-        backgroundImage: `url('${getImagenCarta(contents[logicalContents[cupIndex]] === 'burger' ? 'hamburguesa1.png' : 'Llama.png')}')`
-      }"
-    ></div>
-  </div>
+  v-for="(content, index) in contents"
+  :key="index"
+  class="cup"
+  :ref="el => cupRefs[index] = el"
+  @click="handleGuess(index)"
+>
+  <div
+    class="ball"
+    v-if="revealAtStart || showObjects"
+    :ref="el => { objectRefs[index] = el }"
+    :style="{
+      backgroundImage: `url('${getImagenCarta(content === 'burger' ? 'hamburguesa1.png' : 'Llama.png')}')`
+    }"
+  ></div>
+</div>
+
     </div>
 
     <div class="acciones">
@@ -159,7 +160,7 @@ function liftAll(up = true) {
 
 function shuffleCups() {
   isShuffling.value = true
-  let swaps = 5
+  let swaps = 10
   let count = 0
 
   const doShuffle = () => {
@@ -169,12 +170,17 @@ function shuffleCups() {
       j = Math.floor(Math.random() * 3)
     } while (j === i)
 
-    // intercambiar posiciones en cupOrder
+    // Intercambiar posiciones en cupOrder (visual)
     const temp = cupOrder.value[i]
     cupOrder.value[i] = cupOrder.value[j]
     cupOrder.value[j] = temp
 
-    // z-index: elevar la taza que se mueve más a la derecha (opcional, estético)
+    // Intercambiar contenido lógico en logicalContents usando las posiciones i y j
+    const tmpLogic = logicalContents.value[i]
+    logicalContents.value[i] = logicalContents.value[j]
+    logicalContents.value[j] = tmpLogic
+
+    // Ajustar z-index para animación estética (opcional)
     cupRefs.value[cupOrder.value[i]].style.zIndex = 10
     cupRefs.value[cupOrder.value[j]].style.zIndex = 9
 
@@ -185,19 +191,14 @@ function shuffleCups() {
       }
     })
 
-    // animar cada taza hacia su nueva posición
+    // Animar cada taza hacia su nueva posición
     for (let k = 0; k < 3; k++) {
       tl.to(cupRefs.value[cupOrder.value[k]], {
         left: positions[k],
-        duration: 0.4,
+        duration: 0.25,
         ease: 'power2.inOut'
       }, '<')
     }
-
-    // intercambiar contenido lógico también
-    const tmpLogic = logicalContents.value[i]
-    logicalContents.value[i] = logicalContents.value[j]
-    logicalContents.value[j] = tmpLogic
 
     count++
     if (count < swaps) {
@@ -212,6 +213,7 @@ function shuffleCups() {
   doShuffle()
 }
 
+
 function handleGuess(index) {
   if (isShuffling.value || showObjects.value) return
 
@@ -223,18 +225,17 @@ function handleGuess(index) {
     onComplete: async () => {
       showObjects.value = true
 
-      // Esperar a que Vue actualice el DOM y aparezcan los .ball
       await nextTick()
 
       animateObjectsOutOfCups()
 
       setTimeout(() => {
-        const contentIndex = logicalContents.value[index]
-        result.value = contents.value[contentIndex] === 'burger'
+        result.value = contents.value[index] === 'burger'
       }, 1000)
     }
   })
 }
+
 
 function restartGame() {
   mostrarPopup.value = false
