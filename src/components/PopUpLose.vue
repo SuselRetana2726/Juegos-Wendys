@@ -8,15 +8,15 @@
       />
 
       <h2 class="titulo-popup">
-        ¡UPS, CASI LO LOGRAS!
+        ¡UPS, CASI LO LOGRÁS!
       </h2>
 
       <div class="contenido-popup">
         <div v-if="juego === 'memoria'">
-          <p>Te faltó muy poquito para completar el combo. Pero no te preocupes...<br>¡puedes intentarlo de nuevo!</p>
+          <p>Te faltó muy poquito para completar el combo. Pero no te preocupes...<br>¡podés intentarlo de nuevo!</p>
         </div>
         <div v-else-if="juego === 'tres-cajas'">
-          <p>La burger estaba en otra bolsa...<br>Pero no te rindas, ¡puedes intentarlo de nuevo!</p>
+          <p>La burger estaba en otra bolsa...<br>Pero no te rindás, ¡podés intentarlo de nuevo!</p>
         </div>
       </div>
 

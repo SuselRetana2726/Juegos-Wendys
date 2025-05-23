@@ -13,12 +13,12 @@
 
       <div class="contenido-popup">
         <div v-if="juego === 'memoria'">
-          <p>¡Felicidades! Tienes una memoria increíble. Has armado el combo perfecto y ganaste una sorpresa deliciosa.</p>
+          <p>¡Felicidades! Tenés una memoria increíble. Armáste el combo perfecto y ganaste una sorpresa deliciosa.</p>
         </div>
         <div v-else-if="juego === 'tres-cajas'">
           <p>¡Buen ojo! Elegiste la bolsa correcta y encontraste la burger ganadora.</p>
         </div>
-        <p class="mensaje-final">Pregunta por tu sorpresa.</p>
+        <p class="mensaje-final">Preguntá por tu sorpresa.</p>
       </div>
 
       <button class="boton-iniciar" @click="iniciar">Aceptar</button>

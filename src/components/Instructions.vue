@@ -6,31 +6,31 @@
       </button>
 
       <h2 class="titulo-popup">
-        {{ juego === 'memoria' ? 'MEMORIZA TU COMBO' : 'ENCUENTRA LA BURGER' }}
+        {{ juego === 'memoria' ? 'MEMORIZÁ TU COMBO' : 'ENCONTRÁ LA BURGUER' }}
       </h2>
 
       <div class="contenido-popup">
         <p class="subtitulo">INSTRUCCIONES</p>
         <div v-if="juego === 'memoria'">
-          <p>¡Tendrás que recordar dónde están las imágenes! ¿Podrás hacer coincidir los pares?</p>
+          <p>¡Vas a tener que recordar dónde están las imágenes! ¿Podrás hacer coincidir los pares?</p>
           <ol>
-            <li>Toca una carta para descubrir la imagen.</li>
-            <li>Luego toca otra e intenta encontrar la pareja.</li>
-            <li>Encuentra todos los pares antes que se termine el tiempo.</li>
+            <li>Tocá una carta para descubrir la imagen.</li>
+            <li>Después, tocá otra e intentá encontrar la pareja.</li>
+            <li>Encontrá todos los pares antes de que se termine el tiempo.</li>
           </ol>
         </div>
         <div v-else-if="juego === 'tres-cajas'">
-          <p>¡Pon a prueba tu instinto y tu suerte!</p>
+          <p>¡Poné a prueba tu instinto y tu suerte!</p>
           <ol>
             <li>Tres bolsas...</li>
             <li>Una burger escondida...</li>
-            <li>¡Elige bien y gana una sorpresa sabrosa!</li>
+            <li>¡Elegí bien y ganá una sorpresa sabrosa!</li>
           </ol>
         </div>
-        <p class="mensaje-final">¡Si lo logras, ganas una sorpresa deliciosa!</p>
+        <p class="mensaje-final">¡Si lo lográs, ganás una sorpresa deliciosa!</p>
       </div>
 
-      <button class="boton-iniciar" @click="iniciar">Iniciar juego</button>
+      <button class="boton-iniciar" @click="iniciar">Iniciá el juego</button>
     </div>
   </div>
 </template>

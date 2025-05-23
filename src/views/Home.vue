@@ -4,16 +4,16 @@
       <img src="/images/titulohome.png" alt="Título del juego" class="titulo-img" />
 
       <div class="texto">
-        <h2>¡VAMOS A JUGAR!</h2>
+        <h2>It's game time!</h2>
         <p>Selecciona un juego y comencemos.</p>
       </div>
 
       <div class="botones">
         <button class="btn btn-amarillo" @click="mostrarInstrucciones('tres-cajas')">
-          Encuentra la burger
+          Encontrá la burger
         </button>
         <button class="btn btn-celeste" @click="mostrarInstrucciones('memoria')">
-          Memoriza tu combo
+          Memorizá tu combo
         </button>
       </div>
     </div>
