@@ -4,25 +4,29 @@
 
     <div class="cups">
       <div
-        v-for="(cup, index) in 3"
-        :key="index"
-        class="cup"
-        :ref="el => cupRefs[index] = el"
-        @click="handleGuess(index)"
-      >
-        <div
-          class="ball"
-          v-if="(revealAtStart || showBall) && index === ballIndex"
-          :ref="el => { if(revealAtStart) ballRef = el }"
-        ></div>
-      </div>
+    v-for="(cupIndex, index) in cupOrder"
+    :key="cupIndex"
+    class="cup"
+    :ref="el => cupRefs[cupIndex] = el"
+    @click="handleGuess(cupIndex)"
+  >
+    <div
+      class="ball"
+      v-if="revealAtStart || showObjects"
+      :ref="el => { if (revealAtStart) objectRefs[cupIndex] = el }"
+      :style="{
+        backgroundImage: `url('${getImagenCarta(contents[logicalContents[cupIndex]] === 'burger' ? 'hamburguesa1.png' : 'Llama.png')}')`
+      }"
+    ></div>
+  </div>
     </div>
+
     <div class="acciones">
       <button @click="home" class="boton-icono boton-home">
         <img src="/icons/casa.svg" alt="Inicio" />
       </button>
       <button @click="mostrarInstrucciones('tres-cajas')" class="boton-icono boton-info">
-          <img src="/icons/info.svg" alt="Información" />
+        <img src="/icons/info.svg" alt="Información" />
       </button>
     </div>
 
@@ -32,23 +36,22 @@
       @cerrar="cerrarInstrucciones"
       @iniciar="restartGame" />
 
-      <transition name="fade-scale">
-        <PopUpGanaste
-      juego="tres-cajas" 
-      :visible="result !== null ? result : false" 
-      @iniciar="salir"
-    />
-      </transition>
-      
+    <transition name="fade-scale">
+      <PopUpGanaste
+        juego="tres-cajas" 
+        :visible="result !== null ? result : false" 
+        @iniciar="salir"
+      />
+    </transition>
+
     <transition name="fade-scale">
       <PopUpPerdiste
-      juego="tres-cajas"
-      :visible="result !== null ? !result : false" 
-      @cerrar="salir"
-      @iniciar="restartGame"
-    />
+        juego="tres-cajas"
+        :visible="result !== null ? !result : false" 
+        @cerrar="salir"
+        @iniciar="restartGame"
+      />
     </transition>
-    
   </div>
 </template>
 
@@ -61,70 +64,68 @@ import PopUpInstrucciones from '../components/Instructions.vue'
 import PopUpGanaste from '../components/PopUpWin.vue'
 import PopUpPerdiste from '../components/PopUpLose.vue'
 
-const ballRef = ref(null)
-const revealAtStart = ref(true)
 const cupRefs = ref([])
-const cups = ref([0, 1, 2])
-const ballIndex = ref(Math.floor(Math.random() * 3))
-const showBall = ref(false)
+const objectRefs = ref([null, null, null])
+const contents = ref(shuffleContent())
+const logicalContents = ref([0, 1, 2])
+const showObjects = ref(false)
 const isShuffling = ref(false)
 const result = ref(null)
 const mostrarPopup = ref(false)
-
-const router = useRouter()
+const revealAtStart = ref(true)
 const positions = ['20%', '50%', '80%']
+const cupZIndexes = ref([1, 2, 3])
+const router = useRouter()
+const cupOrder = ref([0, 1, 2])
+
+function getImagenCarta(valor) {
+  return `${import.meta.env.BASE_URL}images/${valor}`
+}
+
+function shuffleContent() {
+  const arr = ['burger', 'llama', 'llama']
+  return arr.sort(() => Math.random() - 0.5)
+}
 
 onMounted(() => {
-  revealAtStart.value = true
-  cups.value.forEach((pos, i) => {
+  for (let i = 0; i < 3; i++) {
     gsap.set(cupRefs.value[i], {
-      left: positions[pos],
+      left: positions[i],
       y: -40,
     })
-  })
+  }
 
   setTimeout(() => {
-    // Animar hamburguesa entrando en la bolsa y desapareciendo
-    animateBallIntoCup()
-    // Luego de un delay, iniciar el shuffle
+    animateObjectsIntoCups()
     setTimeout(() => {
       shuffleCups()
     }, 1000)
   }, 1500)
 })
 
-function mostrarInstrucciones() {
-  mostrarPopup.value = true
-}
+function animateObjectsIntoCups() {
+  contents.value.forEach((_, i) => {
+    const el = objectRefs.value[i]
+    if (!el) return
 
-function cerrarInstrucciones() {
-  mostrarPopup.value = false
-}
-
-function salir() {
-  result.value=null;
-  router.push('/')
-}
-
-function home() {
-  router.push('/')
-}
-
-function animateBallIntoCup() {
-  if (!ballRef.value) return
-
- gsap.to(ballRef.value, {
-  y: 50,
-  scale: 0.8,
-  opacity: 0,
-  duration: 1,
-  ease: 'power2.inOut',
-  onComplete: () => {
-    revealAtStart.value = false
-    showBall.value = false
-    gsap.set(ballRef.value, { y: 0, scale: 1, opacity: 1 }) // reset para la próxima vez
-  }
-})
+    gsap.to(el, {
+      y: 50,
+      scale: 0.8,
+      opacity: 0,
+      duration: 1,
+      ease: 'power2.inOut',
+      onComplete: () => {
+        if (i === contents.value.length - 1) {
+          revealAtStart.value = false
+          showObjects.value = false
+          contents.value.forEach((_, j) => {
+            const elReset = objectRefs.value[j]
+            if (elReset) gsap.set(elReset, { y: 0, scale: 1, opacity: 1 })
+          })
+        }
+      }
+    })
+  })
 }
 
 function liftAll(up = true) {
@@ -143,27 +144,41 @@ function shuffleCups() {
   let count = 0
 
   const doShuffle = () => {
-    const i = Math.floor(Math.random() * 3)
+    let i = Math.floor(Math.random() * 3)
     let j
     do {
       j = Math.floor(Math.random() * 3)
     } while (j === i)
 
-    const temp = cups.value[i]
-    cups.value[i] = cups.value[j]
-    cups.value[j] = temp
+    // intercambiar posiciones en cupOrder
+    const temp = cupOrder.value[i]
+    cupOrder.value[i] = cupOrder.value[j]
+    cupOrder.value[j] = temp
 
-    const tl = gsap.timeline()
-    tl.to(cupRefs.value[i], {
-      left: positions[cups.value[i]],
-      duration: 0.4,
-      ease: 'power2.inOut'
+    // z-index: elevar la taza que se mueve más a la derecha (opcional, estético)
+    cupRefs.value[cupOrder.value[i]].style.zIndex = 10
+    cupRefs.value[cupOrder.value[j]].style.zIndex = 9
+
+    const tl = gsap.timeline({
+      onComplete: () => {
+        cupRefs.value[cupOrder.value[i]].style.zIndex = 1
+        cupRefs.value[cupOrder.value[j]].style.zIndex = 1
+      }
     })
-    tl.to(cupRefs.value[j], {
-      left: positions[cups.value[j]],
-      duration: 0.4,
-      ease: 'power2.inOut'
-    }, '<')
+
+    // animar cada taza hacia su nueva posición
+    for (let k = 0; k < 3; k++) {
+      tl.to(cupRefs.value[cupOrder.value[k]], {
+        left: positions[k],
+        duration: 0.4,
+        ease: 'power2.inOut'
+      }, '<')
+    }
+
+    // intercambiar contenido lógico también
+    const tmpLogic = logicalContents.value[i]
+    logicalContents.value[i] = logicalContents.value[j]
+    logicalContents.value[j] = tmpLogic
 
     count++
     if (count < swaps) {
@@ -179,47 +194,64 @@ function shuffleCups() {
 }
 
 function handleGuess(index) {
-  if (isShuffling.value || showBall.value) return
+  if (isShuffling.value || showObjects.value) return
 
-  if (cups.value[index] === ballIndex.value) {
-    ballIndex.value = cups.value[index]
-  }
-
+  liftAll(true)
   gsap.to(cupRefs.value[index], {
     y: -40,
     duration: 0.3,
     ease: 'power1.out',
     onComplete: () => {
-      showBall.value = true
+      showObjects.value = true
       setTimeout(() => {
-        result.value = cups.value[index] === ballIndex.value
+        const contentIndex = logicalContents.value[index]
+        result.value = contents.value[contentIndex] === 'burger'
       }, 1000)
     }
   })
 }
 
 function restartGame() {
-  mostrarPopup.value=false
-  showBall.value = false
+  mostrarPopup.value = false
+  showObjects.value = false
   result.value = null
   isShuffling.value = false
-  ballIndex.value = Math.floor(Math.random() * 3)
-  cups.value = [0, 1, 2]
   revealAtStart.value = true
+  contents.value = shuffleContent()
+  logicalContents.value = [0, 1, 2]
+  cupOrder.value = [0, 1, 2]
+  cupZIndexes.value = [1, 2, 3]
 
-  cupRefs.value.forEach((cup, i) => {
-    gsap.set(cup, {
-      left: positions[cups.value[i]],
+  for (let i = 0; i < 3; i++) {
+    gsap.set(cupRefs.value[i], {
+      left: positions[i],
       y: -40,
     })
-  })
+  }
 
   setTimeout(() => {
-    animateBallIntoCup()
+    animateObjectsIntoCups()
     setTimeout(() => {
       shuffleCups()
     }, 1000)
   }, 1500)
+}
+
+function mostrarInstrucciones() {
+  mostrarPopup.value = true
+}
+
+function cerrarInstrucciones() {
+  mostrarPopup.value = false
+}
+
+function salir() {
+  result.value = null
+  router.push('/')
+}
+
+function home() {
+  router.push('/')
 }
 </script>
 
@@ -275,35 +307,16 @@ function restartGame() {
 
 .ball {
   position: absolute;
-  bottom: 15vh; /* un poco arriba de la bolsa */
+  bottom: 15vh;
   left: 50%;
   transform: translateX(-50%);
-
   width: 10vh;
   height: 10vh;
-  background-image: url('/images/hamburguesa1.png');
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
 }
 
-.controls {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.result {
-  margin-top: 16px;
-  font-size: 20px;
-  font-weight: bold;
-  color: white;
-  text-shadow: 1px 1px 2px black;
-  text-align: center;
-}
-
-/* Botones fijos abajo */
 .acciones {
   display: flex;
   justify-content: space-between;
@@ -346,5 +359,4 @@ function restartGame() {
 .fade-scale-enter-to, .fade-scale-leave-from {
   opacity: 1;
 }
-
 </style>
