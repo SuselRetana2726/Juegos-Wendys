@@ -1,6 +1,6 @@
 <template>
   <div class="game-container">
-    <div class="title">Encuentra la<br>burger</div>
+    <div class="title">Encuentra la burger</div>
 
     <div class="cups">
     <div
@@ -299,20 +299,21 @@ function home() {
 }
 
 .title {
-  font-size: 4vh;
+  font-size: 6vh;
   color: white;
   font-weight: bold;
   text-align: center;
   text-transform: uppercase;
-  margin-top: 6vh;
+  margin-top: 8vh;
   margin-left: 3vw;
+  font-family: 'GTWalsheimUltraBold', sans-serif;
 }
 
 .cups {
   position: relative;
   width: 100%;
   height: 5vh;
-  margin-top: 2vh;
+  margin-top: 8vh;
 }
 
 .cup {

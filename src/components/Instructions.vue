@@ -122,6 +122,7 @@ export default {
   font-weight: bold;
   margin-bottom: 2vh;
   text-transform: uppercase;
+  font-family: 'GTWalsheimUltraBold', sans-serif;
 }
 
 .subtitulo {
@@ -129,6 +130,8 @@ export default {
   font-size: 1.8vh; /* más pequeño */
   margin-bottom: 1vh;
   text-align: left;
+  font-family: 'GTWalsheimUltraBold', sans-serif;
+  color: #cf1132;
 }
 
 .contenido-popup {
@@ -144,15 +147,16 @@ export default {
 }
 
 .mensaje-final {
-  font-style: italic;
+  /*font-style: italic;*/
   font-weight: bold;
   text-align: center;
   font-size: 1.7vh; /* más pequeño */
   margin-top: 2vh;
+  color: #cf1132
 }
 
 .boton-iniciar {
-  background-color: #f7b733;
+  background-color: #00aaff;
   color: #000;
   border: none;
   padding: 1.4vh 2.8vh;
@@ -162,9 +166,6 @@ export default {
   cursor: pointer;
   width: 100%;
   transition: background 0.2s ease;
-}
-
-.boton-iniciar:hover {
-  background-color: #f9c542;
+  font-weight: bold;
 }
 </style>

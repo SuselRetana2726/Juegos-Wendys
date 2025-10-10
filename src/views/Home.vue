@@ -2,14 +2,8 @@
   <div class="home-container">
     <div class="contenido">
       <img src="/images/titulohome.png" alt="Título del juego" class="titulo-img" />
-
-      <div class="texto">
-        <h2>It's game time!</h2>
-        <p>Selecciona un juego y comencemos.</p>
-      </div>
-
       <div class="botones">
-        <button class="btn btn-amarillo" @click="mostrarInstrucciones('tres-cajas')">
+        <button class="btn btn-blanco" @click="mostrarInstrucciones('tres-cajas')">
           Encontrá la burger
         </button>
         <button class="btn btn-celeste" @click="mostrarInstrucciones('memoria')">
@@ -76,26 +70,14 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  height: 70vh;
+  height: 55vh;
   box-sizing: border-box;
   text-align: center;
-  color: white;
-  margin-top: -10vh;
+  color: white;  
 }
 
 .titulo-img {
   width: 100%;
-}
-
-.texto h2 {
-  font-size: 5.5rem;
-  font-weight: bold;
-  margin: 1.5rem 0 0.5rem;
-}
-
-.texto p {
-  font-size: 2.5rem;
-  margin-bottom: 2rem;
 }
 
 .botones {
@@ -114,10 +96,11 @@ export default {
   border: none;
   border-radius: 10px;
   cursor: pointer;
+  font-weight: bold;
 }
 
-.btn-amarillo {
-  background-color: #f7b733;
+.btn-blanco {
+  background-color: #fff;
   color: black;
 }
 
@@ -163,6 +146,7 @@ export default {
   border-radius: 10px;
   cursor: pointer;
   padding: 1rem;
+  font-weight: bold;
 }
 
 }

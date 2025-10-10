@@ -1,5 +1,17 @@
 * {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'IntroRegular', sans-serif;
+}
+
+@font-face {
+  font-family: 'IntroRegular';
+  src: url('/fonts/IntroRegular_2.otf') format('opentype');
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'GTWalsheimUltraBold';
+  src: url('/fonts/GT-Walsheim-Ultra-Bold.otf') format('opentype');
+  font-style: normal;
 }
 
 html, body {

@@ -115,7 +115,7 @@ export default {
       this.reiniciarJuego();
     },
     generarCartas() {
-      const valoresBase = ['hamburguesa1', 'hamburguesa2', 'Llama', 'logo', 'personaje', 'titulo'];
+      const valoresBase = ['c_frosty', 'c_hamburguesa', 'c_localizador', 'c_papas', 'c_wendysP', 'c_wendysT'];
       const valores = [...valoresBase, ...valoresBase];
       const mezcladas = valores
         .map(valor => ({ valor, volteada: false, encontrada: false }))
@@ -221,9 +221,10 @@ export default {
 }
 
 .contenido h2 {
-  margin-top: 5vh;
-  font-size: 4vh;
+  margin-top: 2vh;
+  font-size: 5vh;
   margin-bottom: 2vh;
+  font-family: 'GTWalsheimUltraBold', sans-serif;
 }
 
 .temporizador {
@@ -237,6 +238,7 @@ export default {
   font-size: 3vh;
   margin-bottom: 2vh;
   align-self: center;
+  font-weight: bold;
 }
 
 .icono-reloj {

@@ -2,13 +2,13 @@
   <div v-if="visible" class="popup-overlay">
     <div class="popup-box">
       <img
-        src="/images/hamburguesa1.png"
+        src="/images/hamburguesa2.png"
         alt="icono popup"
         class="popup-icono"
       />
 
       <h2 class="titulo-popup">
-        {{ juego === 'memoria' ? '¡GANASTE!' : '¡LA ENCONTRASTE!' }}
+        ¡GANASTE!
       </h2>
 
       <div class="contenido-popup">
@@ -67,25 +67,26 @@ export default {
 }
 
 .popup-box h2 {
-  font-size: 3vh;
-  color: #f7b733;
+  font-size: 4.3vh;
+  color: #00aaff;
   font-weight: 900; 
   line-height: 1.2;
   margin-bottom: 2vh;
   text-transform: uppercase;
   text-shadow:
-    0.5px 0 #f7b733,
-    -0.5px 0 #f7b733,
-    0 0.5px #f7b733,
-    0 -0.5px #f7b733;
+    0.5px 0 #00aaff,
+    -0.5px 0 #00aaff,
+    0 0.5px #00aaff,
+    0 -0.5px #00aaff;
 }
 
 .titulo-popup {
   font-size: 2.8vh; /* más pequeño */
-  color: #f7b733;
+  color: #00aaff;
   font-weight: bold;
   margin-bottom: 2vh;
   text-transform: uppercase;
+  font-family: 'GTWalsheimUltraBold', sans-serif;
 }
 
 .subtitulo {
@@ -108,7 +109,6 @@ export default {
 }
 
 .mensaje-final {
-  font-style: italic;
   font-weight: bold;
   text-align: center;
   font-size: 1.7vh; /* más pequeño */
@@ -116,7 +116,7 @@ export default {
 }
 
 .boton-iniciar {
-  background-color: #f7b733;
+  background-color: #00aaff;
   color: #000;
   border: none;
   padding: 1.4vh 2.8vh;
@@ -130,7 +130,7 @@ export default {
 }
 
 .boton-iniciar:hover {
-  background-color: #f9c542;
+  background-color: #00aaff;
 }
 
 .popup-icono {

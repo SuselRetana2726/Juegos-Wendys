@@ -2,7 +2,7 @@
   <div v-if="visible" class="popup-overlay">
     <div class="popup-box">
       <img
-        src="/images/Llama.png"
+        src="/images/tocino.png"
         alt="icono popup"
         class="popup-icono"
       />
@@ -91,6 +91,7 @@ export default {
   font-weight: bold;
   margin-bottom: 2vh;
   text-transform: uppercase;
+  font-family: 'GTWalsheimUltraBold', sans-serif;
 }
 
 .subtitulo {
@@ -125,8 +126,7 @@ export default {
 
 .boton-iniciar,
 .boton-salir {
-  flex: 1;
-  color: #000;
+  flex: 1;  
   border: none;
   padding: 1.4vh 2.8vh;
   border-radius: 1vh;
@@ -137,11 +137,13 @@ export default {
 }
 
 .boton-iniciar {
-  background-color: #f7b733;
+  background-color: #cf1132;
+  color: #fff;
 }
 
 .boton-salir {
   background-color: #00aaff;
+  color: #000;
 }
 
 .popup-icono {

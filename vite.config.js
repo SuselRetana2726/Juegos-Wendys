@@ -3,5 +3,5 @@ import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
   plugins: [vue()],
-  base: '/Juegos-Wendys/', // 👈 usa el nombre de tu repositorio
+  base: './', // 👈 usa el nombre de tu repositorio
 })
