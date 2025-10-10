@@ -15,7 +15,7 @@
     v-if="revealAtStart || showObjects"
     :ref="el => { objectRefs[index] = el }"
     :style="{
-      backgroundImage: `url('${getImagenCarta(content === 'burger' ? 'hamburguesa1.png' : 'Llama.png')}')`
+      backgroundImage: `url('${getImagenCarta(content === 'burger' ? 'hamburguesa1.png' : 'wendyB.png')}')`
     }"
   ></div>
 </div>
@@ -85,7 +85,7 @@ function getImagenCarta(valor) {
 }
 
 function shuffleContent() {
-  const arr = ['burger', 'llama', 'llama']
+  const arr = ['burger', 'wendy', 'wendy']
   return arr.sort(() => Math.random() - 0.5)
 }
 
@@ -273,6 +273,7 @@ function mostrarInstrucciones() {
 
 function cerrarInstrucciones() {
   mostrarPopup.value = false
+  restartGame()
 }
 
 function salir() {
