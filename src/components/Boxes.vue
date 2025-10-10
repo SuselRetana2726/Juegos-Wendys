@@ -78,6 +78,7 @@ const positions = ['20%', '50%', '80%']
 const cupZIndexes = ref([1, 2, 3])
 const router = useRouter()
 const cupOrder = ref([0, 1, 2])
+const isIntroAnimation = ref(true)
 
 function getImagenCarta(valor) {
   return `${import.meta.env.BASE_URL}images/${valor}`
@@ -124,6 +125,7 @@ function animateObjectsOutOfCups() {
 }
 
 function animateObjectsIntoCups() {
+  isIntroAnimation.value = true
   contents.value.forEach((_, i) => {
     const el = objectRefs.value[i]
     if (!el) return
@@ -206,6 +208,7 @@ function shuffleCups() {
     } else {
       setTimeout(() => {
         isShuffling.value = false
+        isIntroAnimation.value = false
       }, 600)
     }
   }
@@ -215,7 +218,7 @@ function shuffleCups() {
 
 
 function handleGuess(index) {
-  if (isShuffling.value || showObjects.value) return
+  if (isIntroAnimation.value || isShuffling.value || showObjects.value) return
 
   liftAll(true)
   gsap.to(cupRefs.value[index], {
@@ -242,6 +245,7 @@ function restartGame() {
   showObjects.value = false
   result.value = null
   isShuffling.value = false
+   isIntroAnimation.value = true
   revealAtStart.value = true
   contents.value = shuffleContent()
   logicalContents.value = [0, 1, 2]
